@@ -1,0 +1,30 @@
+name: Bug report
+description: Something doesn't work or looks wrong
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you expect, and what happened instead? Screenshots help (note that screenshots don't show what your eyes see on the monitor).
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      placeholder: e.g. Windows 11 24H2, macOS 15, Ubuntu 24.04
+    validations:
+      required: true
+  - type: input
+    id: monitor
+    attributes:
+      label: Monitor
+      placeholder: e.g. Dell U2723QE, 3840×2160, 60 Hz, 150% scaling
+  - type: dropdown
+    id: version
+    attributes:
+      label: Version
+      options:
+        - Desktop app
+        - Web version

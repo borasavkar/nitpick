@@ -1,0 +1,11 @@
+name: Feature or improvement
+description: Suggest a new pattern, better advice or a feature
+labels: [enhancement]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: Your idea
+      description: What would you like NitPick to do, and why would it help?
+    validations:
+      required: true
