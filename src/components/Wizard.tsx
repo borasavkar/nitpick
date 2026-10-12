@@ -4,8 +4,9 @@ import type { Prefs } from "../App";
 import { getPattern } from "../patterns";
 import { getTargets } from "../lib/presets";
 import { WIZARD_STEPS } from "../lib/wizard";
-import { saveResult, type OsdValues } from "../lib/storage";
+import { OSD_FIELDS, saveResult, type OsdValues } from "../lib/storage";
 import { getDisplays, isFullscreen, setFullscreen } from "../lib/platform";
+import { useI18n } from "../i18n";
 import { AdviceList, ToneIcon } from "./ResultView";
 
 interface Props {
@@ -14,24 +15,16 @@ interface Props {
   onSaved: (id: string) => void;
 }
 
-const OSD_FIELDS: { key: keyof OsdValues; label: string; placeholder: string }[] = [
-  { key: "pictureMode", label: "Picture mode", placeholder: "e.g. Standard, sRGB, User" },
-  { key: "brightness", label: "Brightness", placeholder: "e.g. 35" },
-  { key: "contrast", label: "Contrast", placeholder: "e.g. 70" },
-  { key: "colorTemp", label: "Color temperature", placeholder: "e.g. Normal, 6500K, User R/G/B" },
-  { key: "sharpness", label: "Sharpness", placeholder: "e.g. 50" },
-  { key: "overdrive", label: "Overdrive / Response time", placeholder: "e.g. Normal" },
-];
-
 const EMPTY_OSD: OsdValues = { pictureMode: "", brightness: "", contrast: "", colorTemp: "", sharpness: "", overdrive: "" };
 
 export function Wizard({ prefs, onExit, onSaved }: Props) {
+  const { t } = useI18n();
   const [stepIndex, setStepIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [osd, setOsd] = useState<OsdValues>(EMPTY_OSD);
   const [panelHidden, setPanelHidden] = useState(false);
   const [full, setFull] = useState(false);
-  const [displayName, setDisplayName] = useState("This display");
+  const [display, setDisplay] = useState({ number: 0, width: screen.width, height: screen.height });
   const targets = getTargets(prefs.useCase, prefs.ambient);
 
   const total = WIZARD_STEPS.length;
@@ -44,7 +37,7 @@ export function Wizard({ prefs, onExit, onSaved }: Props) {
     getDisplays()
       .then((ds) => {
         const d = ds.find((x) => x.current) ?? ds[0];
-        if (d) setDisplayName(`${d.label} (${d.width}×${d.height})`);
+        if (d) setDisplay({ number: d.number, width: d.width, height: d.height });
       })
       .catch(() => {});
     isFullscreen().then(setFull).catch(() => {});
@@ -74,7 +67,7 @@ export function Wizard({ prefs, onExit, onSaved }: Props) {
     saveResult({
       id,
       date: new Date().toISOString(),
-      display: displayName,
+      display,
       useCase: prefs.useCase,
       ambient: prefs.ambient,
       answers,
@@ -85,31 +78,51 @@ export function Wizard({ prefs, onExit, onSaved }: Props) {
 
   const pattern = step?.patternId ? getPattern(step.patternId) : null;
   const advice = step?.advise && answer ? step.advise(answer, targets) : null;
+  const stepNo = Math.min(stepIndex + 1, total);
 
   return (
     <div className={`wizard ${panelHidden ? "panel-hidden" : ""}`}>
       <div className="wizard-stage" onClick={() => panelHidden && setPanelHidden(false)}>
         {pattern ? pattern.render(step?.variant ?? 0) : <div className="neutral-stage" />}
-        {panelHidden && <div className="stage-hint">Click or press H to show the guide</div>}
+        {panelHidden && (
+          <div className="stage-hint">
+            {t({ en: "Click or press H to show the guide", tr: "Rehberi göstermek için tıklayın ya da H tuşuna basın" })}
+          </div>
+        )}
       </div>
 
       <aside className="wizard-panel">
         <div className="wp-top">
-          <div className="progress" aria-label={`Step ${Math.min(stepIndex + 1, total)} of ${total}`}>
+          <div className="progress" aria-label={t({ en: `Step ${stepNo} of ${total}`, tr: `Adım ${stepNo}/${total}` })}>
             {WIZARD_STEPS.map((s, i) => (
               <span key={s.id} className={i < stepIndex ? "done" : i === stepIndex ? "now" : ""} />
             ))}
           </div>
           <div className="wp-tools">
             {!isSummary && pattern && (
-              <button className="icon-btn" onClick={() => setPanelHidden(true)} title="Hide guide (H)" aria-label="Hide guide">
+              <button
+                className="icon-btn"
+                onClick={() => setPanelHidden(true)}
+                title={t({ en: "Hide guide (H)", tr: "Rehberi gizle (H)" })}
+                aria-label={t({ en: "Hide guide", tr: "Rehberi gizle" })}
+              >
                 <EyeOff size={17} />
               </button>
             )}
-            <button className="icon-btn" onClick={toggleFull} title="Toggle fullscreen" aria-label="Toggle fullscreen">
+            <button
+              className="icon-btn"
+              onClick={toggleFull}
+              title={t({ en: "Toggle fullscreen", tr: "Tam ekranı aç/kapat" })}
+              aria-label={t({ en: "Toggle fullscreen", tr: "Tam ekranı aç/kapat" })}
+            >
               {full ? <Minimize size={17} /> : <Maximize size={17} />}
             </button>
-            <button className="icon-btn" onClick={exit} title="Exit setup" aria-label="Exit setup">
+            <button
+              className="icon-btn"
+              onClick={exit}
+              title={t({ en: "Exit setup", tr: "Ayardan çık" })}
+              aria-label={t({ en: "Exit setup", tr: "Ayardan çık" })}
+            >
               <X size={18} />
             </button>
           </div>
@@ -119,24 +132,24 @@ export function Wizard({ prefs, onExit, onSaved }: Props) {
           {step ? (
             <>
               <div className="step-label">
-                Step {stepIndex + 1} of {total}
-                {step.optional && " · optional"}
+                {t({ en: `Step ${stepNo} of ${total}`, tr: `Adım ${stepNo}/${total}` })}
+                {step.optional && t({ en: " · optional", tr: " · isteğe bağlı" })}
               </div>
-              <h2>{step.title}</h2>
+              <h2>{t(step.title)}</h2>
               {step.controls && (
                 <div className="controls-chip">
-                  <SlidersHorizontal size={14} /> Monitor menu: {step.controls}
+                  <SlidersHorizontal size={14} /> {t({ en: "Related settings", tr: "İlgili ayarlar" })}: {t(step.controls)}
                 </div>
               )}
               <ul className="steps-list">
-                {step.instructions(targets).map((t) => (
-                  <li key={t}>{t}</li>
+                {step.instructions(targets).map((text) => (
+                  <li key={text.en}>{t(text)}</li>
                 ))}
               </ul>
 
               {step.question && step.options && (
                 <div className="question">
-                  <h3>{step.question}</h3>
+                  <h3>{t(step.question)}</h3>
                   <div className="options">
                     {step.options.map((o) => (
                       <button
@@ -144,7 +157,7 @@ export function Wizard({ prefs, onExit, onSaved }: Props) {
                         className={answer === o.id ? "on" : ""}
                         onClick={() => setAnswers({ ...answers, [step.id]: o.id })}
                       >
-                        {answer === o.id && <Check size={15} />} {o.label}
+                        {answer === o.id && <Check size={15} />} {t(o.label)}
                       </button>
                     ))}
                   </div>
@@ -154,30 +167,35 @@ export function Wizard({ prefs, onExit, onSaved }: Props) {
               {advice && (
                 <div className={`advice ${advice.tone}`}>
                   <ToneIcon tone={advice.tone} />
-                  <p>{advice.text}</p>
+                  <p>{t(advice.text)}</p>
                 </div>
               )}
 
               {pattern && (
                 <button className="link-btn" onClick={() => setPanelHidden(true)}>
-                  <Eye size={15} /> View the pattern without this panel (H)
+                  <Eye size={15} /> {t({ en: "View the pattern without this panel (H)", tr: "Deseni bu panel olmadan görüntüle (H)" })}
                 </button>
               )}
             </>
           ) : (
             <>
-              <div className="step-label">All done</div>
-              <h2>Your results</h2>
+              <div className="step-label">{t({ en: "All done", tr: "Tamamlandı" })}</div>
+              <h2>{t({ en: "Your results", tr: "Sonuçlarınız" })}</h2>
               <AdviceList answers={answers} targets={targets} />
               <div className="osd-form">
-                <h3>Write down your monitor's settings</h3>
-                <p className="muted">Optional, but handy if you reset the monitor later.</p>
+                <h3>{t({ en: "Write down your monitor's settings", tr: "Monitör ayarlarınızı not edin" })}</h3>
+                <p className="muted">
+                  {t({
+                    en: "Optional, but handy if you reset the monitor later.",
+                    tr: "İsteğe bağlıdır, ancak monitörü ileride sıfırlarsanız işinize yarar.",
+                  })}
+                </p>
                 {OSD_FIELDS.map((f) => (
                   <label key={f.key}>
-                    <span>{f.label}</span>
+                    <span>{t(f.label)}</span>
                     <input
                       value={osd[f.key]}
-                      placeholder={f.placeholder}
+                      placeholder={t(f.placeholder)}
                       onChange={(e) => setOsd({ ...osd, [f.key]: e.target.value })}
                     />
                   </label>
@@ -189,15 +207,15 @@ export function Wizard({ prefs, onExit, onSaved }: Props) {
 
         <div className="wp-foot">
           <button className="btn ghost" disabled={stepIndex === 0} onClick={() => setStepIndex(stepIndex - 1)}>
-            <ArrowLeft size={16} /> Back
+            <ArrowLeft size={16} /> {t({ en: "Back", tr: "Geri" })}
           </button>
           {isSummary ? (
             <button className="btn primary" onClick={save}>
-              <Check size={16} /> Save results
+              <Check size={16} /> {t({ en: "Save results", tr: "Sonuçları kaydet" })}
             </button>
           ) : (
             <button className="btn primary" disabled={!canContinue} onClick={() => setStepIndex(stepIndex + 1)}>
-              {stepIndex === 0 ? "I'm ready" : "Next"} <ArrowRight size={16} />
+              {stepIndex === 0 ? t({ en: "I'm ready", tr: "Hazırım" }) : t({ en: "Next", tr: "İleri" })} <ArrowRight size={16} />
             </button>
           )}
         </div>

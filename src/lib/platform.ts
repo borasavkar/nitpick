@@ -1,15 +1,23 @@
 import { availableMonitors, currentMonitor, getCurrentWindow } from "@tauri-apps/api/window";
+import type { L } from "../i18n";
 
 /** True when running inside the Tauri desktop app, false in the web version. */
 export const isTauri = (): boolean => "__TAURI_INTERNALS__" in window;
 
 export interface DisplayInfo {
   id: string;
-  label: string;
+  /** 1-based display number; 0 in the web version, which only sees its own screen. */
+  number: number;
   width: number;
   height: number;
   scale: number;
   current: boolean;
+}
+
+export function displayLabel(d: DisplayInfo, t: (text: L) => string): string {
+  return d.number === 0
+    ? t({ en: "This display", tr: "Bu ekran" })
+    : t({ en: `Display ${d.number}`, tr: `Ekran ${d.number}` });
 }
 
 /** Lists connected displays. The web version only knows about the screen it runs on. */
@@ -19,7 +27,7 @@ export async function getDisplays(): Promise<DisplayInfo[]> {
     return [
       {
         id: "web",
-        label: "This display",
+        number: 0,
         width: Math.round(screen.width * scale),
         height: Math.round(screen.height * scale),
         scale,
@@ -30,7 +38,7 @@ export async function getDisplays(): Promise<DisplayInfo[]> {
   const [monitors, current] = await Promise.all([availableMonitors(), currentMonitor()]);
   return monitors.map((m, i) => ({
     id: m.name ?? `display-${i + 1}`,
-    label: `Display ${i + 1}`,
+    number: i + 1,
     width: m.size.width,
     height: m.size.height,
     scale: m.scaleFactor,

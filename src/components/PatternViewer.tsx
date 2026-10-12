@@ -2,9 +2,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { PATTERNS } from "../patterns";
 import { setFullscreen } from "../lib/platform";
+import { useI18n } from "../i18n";
 
 /** Full-screen pattern viewer with an auto-hiding help overlay. */
 export function PatternViewer({ initialId, onClose }: { initialId: string; onClose: () => void }) {
+  const { t } = useI18n();
   const [index, setIndex] = useState(() => Math.max(0, PATTERNS.findIndex((p) => p.id === initialId)));
   const [variant, setVariant] = useState(0);
   const [hudVisible, setHudVisible] = useState(true);
@@ -60,6 +62,8 @@ export function PatternViewer({ initialId, onClose }: { initialId: string; onClo
   }, [close, goVariant, goPattern, poke]);
 
   const showHud = hudVisible || pinned;
+  const prev = PATTERNS[(index - 1 + PATTERNS.length) % PATTERNS.length];
+  const next = PATTERNS[(index + 1) % PATTERNS.length];
 
   return (
     <div className={`viewer ${showHud ? "" : "hide-cursor"}`} onMouseMove={poke} onClick={() => goVariant(1)}>
@@ -68,34 +72,37 @@ export function PatternViewer({ initialId, onClose }: { initialId: string; onClo
       <div className={`hud ${showHud ? "show" : ""}`} onClick={(e) => e.stopPropagation()}>
         <div className="hud-head">
           <div>
-            <b>{pattern.name}</b>
+            <b>{t(pattern.name)}</b>
             {variants.length > 0 && (
               <span className="hud-variant">
-                {variants[variant]} ({variant + 1}/{variants.length})
+                {t(variants[variant])} ({variant + 1}/{variants.length})
               </span>
             )}
           </div>
-          <button className="icon-btn" onClick={close} aria-label="Close">
+          <button className="icon-btn" onClick={close} aria-label={t({ en: "Close", tr: "Kapat" })}>
             <X size={18} />
           </button>
         </div>
         <ul>
-          {pattern.instructions.map((t) => (
-            <li key={t}>{t}</li>
+          {pattern.instructions.map((text) => (
+            <li key={text.en}>{t(text)}</li>
           ))}
         </ul>
         <div className="hud-nav">
           <button className="btn ghost sm" onClick={() => goPattern(-1)}>
-            <ChevronLeft size={16} /> {PATTERNS[(index - 1 + PATTERNS.length) % PATTERNS.length].name}
+            <ChevronLeft size={16} /> {t(prev.name)}
           </button>
           <button className="btn ghost sm" onClick={() => goPattern(1)}>
-            {PATTERNS[(index + 1) % PATTERNS.length].name} <ChevronRight size={16} />
+            {t(next.name)} <ChevronRight size={16} />
           </button>
         </div>
         <div className="hud-keys">
           <kbd>←</kbd>
-          <kbd>→</kbd> {variants.length > 1 ? "variant" : "pattern"} · <kbd>↑</kbd>
-          <kbd>↓</kbd> pattern · <kbd>H</kbd> {pinned ? "unpin" : "pin"} help · <kbd>Esc</kbd> exit
+          <kbd>→</kbd>{" "}
+          {variants.length > 1 ? t({ en: "variant", tr: "varyant" }) : t({ en: "pattern", tr: "desen" })} · <kbd>↑</kbd>
+          <kbd>↓</kbd> {t({ en: "pattern", tr: "desen" })} · <kbd>H</kbd>{" "}
+          {pinned ? t({ en: "unpin help", tr: "sabitlemeyi kaldır" }) : t({ en: "pin help", tr: "yardımı sabitle" })} ·{" "}
+          <kbd>Esc</kbd> {t({ en: "exit", tr: "çıkış" })}
         </div>
       </div>
     </div>

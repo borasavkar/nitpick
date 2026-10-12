@@ -24,6 +24,7 @@ Most monitors ship with settings tuned to look flashy in a store: too bright, to
 - **11 test patterns.** Black level, white level, gamma (per channel), gray balance, gradients, sharpness, color bars, uniformity, dead pixels, motion clarity and text clarity.
 - **Pixel-exact rendering.** Patterns are drawn at your display's physical resolution, so 1-pixel line patterns stay accurate even with 125% or 150% OS scaling.
 - **Saved results.** Keep a record of your monitor settings and the check results for each display, and copy them as text.
+- **English and Turkish.** The app picks your language automatically; switch any time from the top bar.
 - **Private.** No accounts, no telemetry, no network access. Everything stays on your device.
 
 ## Roadmap
@@ -33,7 +34,7 @@ Most monitors ship with settings tuned to look flashy in a store: too bright, to
 | **0.1** | Test patterns, guided setup, use-case presets, web version |
 | 0.2 | Adjust supported monitors directly from the app over DDC/CI (brightness, contrast, RGB gain) |
 | 0.3 | Quick profiles (Day / Movie / Night) from the system tray |
-| 1.0 | Multi-monitor workflow, translations, shareable result cards |
+| 1.0 | Multi-monitor workflow, more languages, shareable result cards |
 
 ## Install
 

@@ -39,6 +39,14 @@
     "longDescription": "NitPick helps anyone find their monitor's best brightness, contrast, gamma, color and sharpness settings with guided test patterns. No calibration hardware needed.",
     "publisher": "Bora Şavkar",
     "copyright": "© 2026 Bora Şavkar. MIT License.",
-    "homepage": "https://github.com/borasavkar/nitpick"
+    "homepage": "https://github.com/borasavkar/nitpick",
+    "windows": {
+      "nsis": {
+        "languages": [
+          "English",
+          "Turkish"
+        ]
+      }
+    }
   }
 }

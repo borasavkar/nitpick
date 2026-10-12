@@ -54,11 +54,11 @@ export function drawWhiteLevel(ctx: Ctx, w: number, h: number, dpr: number) {
   });
 }
 
-export const GAMMA_CHANNELS = ["Gray", "Red", "Green", "Blue"] as const;
 
 /**
  * Gamma bars: each bar is 1px alternating full/zero lines (50% light on average)
  * with a solid patch in the middle. The bar whose patch blends in shows the gamma.
+ * channel: 0 gray, 1 red, 2 green, 3 blue.
  */
 export function drawGamma(ctx: Ctx, w: number, h: number, dpr: number, channel = 0) {
   const gammas = [1.8, 2.0, 2.2, 2.4, 2.6];
@@ -196,36 +196,22 @@ export function drawSharpness(ctx: Ctx, w: number, h: number, dpr: number) {
     ctx.fillStyle = i % 2 ? "#fff" : "#000";
     ctx.textAlign = "left";
     ctx.textBaseline = "top";
-    ctx.fillText(`${s}px Sharp text Aa 0123`, c.x, y);
+    ctx.fillText(`${s}px  Aa Bb Gg Şş 0123456789`, c.x, y);
     y += Math.round(s * dpr * 1.6);
   });
   ctx.restore();
 }
 
-export const SOLID_COLORS: { name: string; color: string }[] = [
-  { name: "Black", color: "#000000" },
-  { name: "White", color: "#ffffff" },
-  { name: "Red", color: "#ff0000" },
-  { name: "Green", color: "#00ff00" },
-  { name: "Blue", color: "#0000ff" },
-  { name: "Cyan", color: "#00ffff" },
-  { name: "Magenta", color: "#ff00ff" },
-  { name: "Yellow", color: "#ffff00" },
-];
+/** Solid fill colors; names live with the pattern definitions. */
+export const SOLID_COLORS = ["#000000", "#ffffff", "#ff0000", "#00ff00", "#0000ff", "#00ffff", "#ff00ff", "#ffff00"];
 
 export function drawSolid(ctx: Ctx, w: number, h: number, color: string) {
   ctx.fillStyle = color;
   ctx.fillRect(0, 0, w, h);
 }
 
-export const UNIFORMITY_LEVELS: { name: string; value: number }[] = [
-  { name: "Black (backlight bleed)", value: 0 },
-  { name: "Dark gray 10%", value: 26 },
-  { name: "Gray 25%", value: 64 },
-  { name: "Gray 50%", value: 128 },
-  { name: "Gray 75%", value: 191 },
-  { name: "White 100%", value: 255 },
-];
+/** Gray levels for the uniformity test: black, 10%, 25%, 50%, 75%, 100%. */
+export const UNIFORMITY_LEVELS = [0, 26, 64, 128, 191, 255];
 
 export function drawUniformity(ctx: Ctx, w: number, h: number, value: number) {
   drawSolid(ctx, w, h, gray(value));

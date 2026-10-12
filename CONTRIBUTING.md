@@ -7,7 +7,7 @@ Thanks for helping make monitors look better for everyone!
 - **Report bugs.** Include your OS, monitor model, resolution, scaling and refresh rate.
 - **Improve advice.** Monitor menus use many different names for the same setting. If the advice didn't match your monitor, tell us what your menu calls it.
 - **Add test patterns.** Patterns live in `src/patterns/`. Drawing code goes in `draw.ts`; registration and instructions go in `index.tsx`.
-- **Translate.** Translation support is planned for 1.0. Open an issue if you'd like to help with a language.
+- **Translate.** NitPick ships in English and Turkish. Every text is an `{ en, tr }` object next to the code that uses it (see `src/i18n.tsx`); to add a language, add its code to `Lang` and fill in the new key everywhere TypeScript asks for it.
 
 ## Development setup
 

@@ -3,6 +3,7 @@ import { Home } from "./components/Home";
 import { PatternViewer } from "./components/PatternViewer";
 import { Wizard } from "./components/Wizard";
 import { ResultView } from "./components/ResultView";
+import { I18nProvider } from "./i18n";
 import type { Ambient, UseCase } from "./lib/presets";
 import "./styles.css";
 
@@ -28,7 +29,7 @@ function loadPrefs(): Prefs {
   }
 }
 
-export default function App() {
+function Screens() {
   const [view, setView] = useState<View>({ name: "home" });
   const [prefs, setPrefs] = useState<Prefs>(loadPrefs);
 
@@ -56,4 +57,12 @@ export default function App() {
     default:
       return <Home prefs={prefs} onPrefs={setPrefs} onNavigate={setView} />;
   }
+}
+
+export default function App() {
+  return (
+    <I18nProvider>
+      <Screens />
+    </I18nProvider>
+  );
 }

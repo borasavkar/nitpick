@@ -2,7 +2,8 @@ import { useState } from "react";
 import { AlertTriangle, ArrowLeft, CheckCircle2, Copy, XCircle } from "lucide-react";
 import { AMBIENTS, USE_CASES, getTargets, type Targets } from "../lib/presets";
 import { WIZARD_STEPS, type Tone } from "../lib/wizard";
-import { loadResults, type SavedResult } from "../lib/storage";
+import { OSD_FIELDS, loadResults, resultTitle, type SavedResult } from "../lib/storage";
+import { useI18n, type L } from "../i18n";
 
 export function ToneIcon({ tone }: { tone: Tone }) {
   if (tone === "good") return <CheckCircle2 size={18} className="tone-icon good" />;
@@ -10,14 +11,19 @@ export function ToneIcon({ tone }: { tone: Tone }) {
   return <XCircle size={18} className="tone-icon bad" />;
 }
 
-/** One row per answered wizard step with its verdict and advice. */
-export function AdviceList({ answers, targets }: { answers: Record<string, string>; targets: Targets }) {
-  const rows = WIZARD_STEPS.filter((s) => s.advise && answers[s.id]).map((s) => ({
+function answeredSteps(answers: Record<string, string>, targets: Targets) {
+  return WIZARD_STEPS.filter((s) => s.advise && answers[s.id]).map((s) => ({
     step: s,
-    label: s.options?.find((o) => o.id === answers[s.id])?.label ?? answers[s.id],
+    label: s.options?.find((o) => o.id === answers[s.id])?.label ?? { en: answers[s.id], tr: answers[s.id] },
     advice: s.advise!(answers[s.id], targets),
   }));
-  if (rows.length === 0) return <p className="muted">No answers recorded.</p>;
+}
+
+/** One row per answered wizard step with its verdict and advice. */
+export function AdviceList({ answers, targets }: { answers: Record<string, string>; targets: Targets }) {
+  const { t } = useI18n();
+  const rows = answeredSteps(answers, targets);
+  if (rows.length === 0) return <p className="muted">{t({ en: "No answers recorded.", tr: "Kayıtlı cevap yok." })}</p>;
   return (
     <div className="advice-list">
       {rows.map(({ step, label, advice }) => (
@@ -25,9 +31,9 @@ export function AdviceList({ answers, targets }: { answers: Record<string, strin
           <ToneIcon tone={advice.tone} />
           <div>
             <b>
-              {step.title}: <span className="answer">{label}</span>
+              {t(step.title)}: <span className="answer">{t(label)}</span>
             </b>
-            <p>{advice.text}</p>
+            <p>{t(advice.text)}</p>
           </div>
         </div>
       ))}
@@ -35,33 +41,32 @@ export function AdviceList({ answers, targets }: { answers: Record<string, strin
   );
 }
 
-function toText(r: SavedResult, t: Targets): string {
+function toText(r: SavedResult, targets: Targets, t: (text: L) => string, locale: string): string {
+  const useCase = t(USE_CASES.find((u) => u.id === r.useCase)!.label);
+  const ambient = t(AMBIENTS.find((a) => a.id === r.ambient)!.label);
+  const [lo, hi] = targets.luminance;
   const lines = [
-    `NitPick results — ${r.display}`,
-    new Date(r.date).toLocaleString(),
-    `Use: ${USE_CASES.find((u) => u.id === r.useCase)?.label}, room: ${AMBIENTS.find((a) => a.id === r.ambient)?.label}`,
-    `Targets: ${t.luminance[0]}–${t.luminance[1]} nits, gamma ${t.gamma.toFixed(1)}, ${t.whitePoint}`,
+    `${t({ en: "NitPick results", tr: "NitPick sonuçları" })} — ${resultTitle(r, t)}`,
+    new Date(r.date).toLocaleString(locale),
+    t({ en: `Use: ${useCase}, room: ${ambient}`, tr: `Kullanım: ${useCase}, oda: ${ambient}` }),
+    t({
+      en: `Targets: ${lo}–${hi} nits, gamma ${targets.gamma.toFixed(1)}, ${targets.whitePoint}`,
+      tr: `Hedefler: ${lo}–${hi} nit, gama ${targets.gamma.toFixed(1)}, ${targets.whitePoint}`,
+    }),
     "",
-    "Monitor settings:",
-    `  Picture mode: ${r.osd.pictureMode || "-"}`,
-    `  Brightness: ${r.osd.brightness || "-"}`,
-    `  Contrast: ${r.osd.contrast || "-"}`,
-    `  Color temperature: ${r.osd.colorTemp || "-"}`,
-    `  Sharpness: ${r.osd.sharpness || "-"}`,
-    `  Overdrive: ${r.osd.overdrive || "-"}`,
+    t({ en: "Monitor settings:", tr: "Monitör ayarları:" }),
+    ...OSD_FIELDS.map((f) => `  ${t(f.label)}: ${r.osd[f.key] || "-"}`),
     "",
-    "Checks:",
+    t({ en: "Checks:", tr: "Kontroller:" }),
+    ...answeredSteps(r.answers, targets).map(
+      ({ step, label, advice }) => `  ${t(step.title)}: ${t(label)} — ${t(advice.text)}`,
+    ),
   ];
-  for (const s of WIZARD_STEPS) {
-    const a = r.answers[s.id];
-    if (!a || !s.advise) continue;
-    const label = s.options?.find((o) => o.id === a)?.label ?? a;
-    lines.push(`  ${s.title}: ${label} — ${s.advise(a, t).text}`);
-  }
   return lines.join("\n");
 }
 
 export function ResultView({ id, onBack }: { id: string; onBack: () => void }) {
+  const { t, locale } = useI18n();
   const result = loadResults().find((r) => r.id === id);
   const [copied, setCopied] = useState(false);
 
@@ -69,26 +74,18 @@ export function ResultView({ id, onBack }: { id: string; onBack: () => void }) {
     return (
       <div className="result-page">
         <button className="btn ghost" onClick={onBack}>
-          <ArrowLeft size={16} /> Back
+          <ArrowLeft size={16} /> {t({ en: "Back", tr: "Geri" })}
         </button>
-        <p className="muted">This result could not be found.</p>
+        <p className="muted">{t({ en: "This result could not be found.", tr: "Bu sonuç bulunamadı." })}</p>
       </div>
     );
   }
 
-  const t = getTargets(result.useCase, result.ambient);
-  const osdRows: [string, string][] = [
-    ["Picture mode", result.osd.pictureMode],
-    ["Brightness", result.osd.brightness],
-    ["Contrast", result.osd.contrast],
-    ["Color temperature", result.osd.colorTemp],
-    ["Sharpness", result.osd.sharpness],
-    ["Overdrive", result.osd.overdrive],
-  ];
+  const targets = getTargets(result.useCase, result.ambient);
 
   const copy = async () => {
     try {
-      await navigator.clipboard.writeText(toText(result, t));
+      await navigator.clipboard.writeText(toText(result, targets, t, locale));
       setCopied(true);
       setTimeout(() => setCopied(false), 1800);
     } catch {
@@ -100,58 +97,59 @@ export function ResultView({ id, onBack }: { id: string; onBack: () => void }) {
     <div className="result-page">
       <div className="result-head">
         <button className="btn ghost" onClick={onBack}>
-          <ArrowLeft size={16} /> Home
+          <ArrowLeft size={16} /> {t({ en: "Home", tr: "Ana sayfa" })}
         </button>
         <button className="btn ghost" onClick={copy}>
-          <Copy size={16} /> {copied ? "Copied" : "Copy as text"}
+          <Copy size={16} />{" "}
+          {copied ? t({ en: "Copied", tr: "Kopyalandı" }) : t({ en: "Copy as text", tr: "Metin olarak kopyala" })}
         </button>
       </div>
 
       <div className="result-card">
         <div className="rc-title">
-          <h1>{result.display}</h1>
+          <h1>{resultTitle(result, t)}</h1>
           <span className="muted">
-            {new Date(result.date).toLocaleString()} · {USE_CASES.find((u) => u.id === result.useCase)?.label} ·{" "}
-            {AMBIENTS.find((a) => a.id === result.ambient)?.label}
+            {new Date(result.date).toLocaleString(locale)} · {t(USE_CASES.find((u) => u.id === result.useCase)!.label)} ·{" "}
+            {t(AMBIENTS.find((a) => a.id === result.ambient)!.label)}
           </span>
         </div>
 
         <div className="rc-grid">
           <div>
-            <h3>Targets</h3>
+            <h3>{t({ en: "Targets", tr: "Hedefler" })}</h3>
             <dl className="kv">
-              <dt>Brightness</dt>
+              <dt>{t({ en: "Brightness", tr: "Parlaklık" })}</dt>
               <dd>
-                {t.luminance[0]}–{t.luminance[1]} nits
+                {targets.luminance[0]}–{targets.luminance[1]} {t({ en: "nits", tr: "nit" })}
               </dd>
-              <dt>Gamma</dt>
-              <dd>{t.gamma.toFixed(1)}</dd>
-              <dt>White point</dt>
-              <dd>{t.whitePoint}</dd>
+              <dt>{t({ en: "Gamma", tr: "Gama" })}</dt>
+              <dd>{targets.gamma.toFixed(1)}</dd>
+              <dt>{t({ en: "White point", tr: "Beyaz noktası" })}</dt>
+              <dd>{targets.whitePoint}</dd>
             </dl>
           </div>
           <div>
-            <h3>Monitor settings</h3>
+            <h3>{t({ en: "Monitor settings", tr: "Monitör ayarları" })}</h3>
             <dl className="kv">
-              {osdRows.map(([k, v]) => (
-                <div key={k} className="kv-row">
-                  <dt>{k}</dt>
-                  <dd>{v || "—"}</dd>
+              {OSD_FIELDS.map((f) => (
+                <div key={f.key} className="kv-row">
+                  <dt>{t(f.label)}</dt>
+                  <dd>{result.osd[f.key] || "—"}</dd>
                 </div>
               ))}
             </dl>
           </div>
         </div>
 
-        <h3>Checks</h3>
-        <AdviceList answers={result.answers} targets={t} />
+        <h3>{t({ en: "Checks", tr: "Kontroller" })}</h3>
+        <AdviceList answers={result.answers} targets={targets} />
 
-        {t.tips.length > 0 && (
+        {targets.tips.length > 0 && (
           <>
-            <h3>Tips for your use</h3>
+            <h3>{t({ en: "Tips for your use", tr: "Kullanımınıza özel öneriler" })}</h3>
             <ul className="tips">
-              {t.tips.map((tip) => (
-                <li key={tip}>{tip}</li>
+              {targets.tips.map((tip) => (
+                <li key={tip.en}>{t(tip)}</li>
               ))}
             </ul>
           </>

@@ -57,6 +57,11 @@ input { font: inherit; color: inherit; }
   padding: 12px 28px; background: rgba(17, 17, 20, 0.9); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border);
 }
 .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.1rem; letter-spacing: -0.01em; }
+.topbar-right { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.lang-switch { display: flex; padding: 3px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); }
+.lang-switch button { padding: 4px 10px; border-radius: 999px; font-size: 0.78rem; font-weight: 600; color: var(--muted); }
+.lang-switch button:hover { color: var(--text); }
+.lang-switch button.on { background: var(--text); color: #111; }
 .display-chip {
   display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px;
   border: 1px solid var(--border); background: var(--surface); color: var(--muted); font-size: 0.84rem;
