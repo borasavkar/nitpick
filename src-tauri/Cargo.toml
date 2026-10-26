@@ -1,6 +1,6 @@
 [package]
 name = "nitpick"
-version = "0.1.0"
+version = "0.2.0"
 description = "Find your monitor's best settings with guided test patterns"
 authors = ["Bora Şavkar"]
 license = "MIT"
@@ -23,6 +23,7 @@ tauri-build = { version = "2", features = [] }
 tauri = { version = "2", features = [] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+ddc-hi = { version = "0.4.1", default-features = false, features = ["ddc-i2c", "ddc-winapi", "ddc-macos"] }
 
 
 # Read the optimization guideline for more details: https://tauri.app/concept/size/#cargo-configuration

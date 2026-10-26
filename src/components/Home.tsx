@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 import { ChevronRight, Monitor, Play, Trash2 } from "lucide-react";
 import type { Prefs, View } from "../App";
 import { Logo } from "./Logo";
+import { MonitorControls } from "./MonitorControls";
 import { PATTERNS } from "../patterns";
 import { AMBIENTS, USE_CASES, getTargets } from "../lib/presets";
 import { deleteResult, loadResults, resultTitle, type SavedResult } from "../lib/storage";
 import { displayLabel, getDisplays, isTauri, measureRefreshRate, type DisplayInfo } from "../lib/platform";
 import { LANGS, useI18n } from "../i18n";
+import { version } from "../../package.json";
 
 /** Turkish writes the percent sign first (%125). */
 const percent = (n: number, lang: string) => (lang === "tr" ? `%${n}` : `${n}%`);
@@ -134,6 +136,12 @@ export function Home({ prefs, onPrefs, onNavigate }: Props) {
           </div>
         </section>
 
+        {isTauri() && (
+          <section>
+            <MonitorControls standalone />
+          </section>
+        )}
+
         <section>
           <div className="section-title">
             <h2>{t({ en: "Test patterns", tr: "Test desenleri" })}</h2>
@@ -194,7 +202,7 @@ export function Home({ prefs, onPrefs, onNavigate }: Props) {
       </main>
 
       <footer className="home-foot">
-        NitPick v0.1 · {t({ en: "MIT License", tr: "MIT Lisansı" })} ·{" "}
+        NitPick v{version} · {t({ en: "MIT License", tr: "MIT Lisansı" })} ·{" "}
         {isTauri() ? t({ en: "Desktop app", tr: "Masaüstü uygulaması" }) : t({ en: "Web version", tr: "Web sürümü" })}
       </footer>
     </div>

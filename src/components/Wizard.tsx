@@ -8,6 +8,8 @@ import { OSD_FIELDS, saveResult, type OsdValues } from "../lib/storage";
 import { getDisplays, isFullscreen, setFullscreen } from "../lib/platform";
 import { useI18n } from "../i18n";
 import { AdviceList, ToneIcon } from "./ResultView";
+import { MonitorControls } from "./MonitorControls";
+import { VCP, featureValue, selectedDisplay, useDdc } from "../lib/ddc";
 
 interface Props {
   prefs: Prefs;
@@ -42,6 +44,22 @@ export function Wizard({ prefs, onExit, onSaved }: Props) {
       .catch(() => {});
     isFullscreen().then(setFull).catch(() => {});
   }, []);
+
+  const ddc = useDdc();
+
+  const next = () => {
+    // Entering the summary: fill in the values the monitor reported over DDC/CI.
+    if (stepIndex + 1 === total) {
+      const d = selectedDisplay(ddc);
+      const value = (code: number) => featureValue(d, code)?.value.toString() ?? "";
+      setOsd((o) => ({
+        ...o,
+        brightness: o.brightness || value(VCP.brightness),
+        contrast: o.contrast || value(VCP.contrast),
+      }));
+    }
+    setStepIndex(stepIndex + 1);
+  };
 
   const toggleFull = async () => {
     await setFullscreen(!full);
@@ -147,6 +165,8 @@ export function Wizard({ prefs, onExit, onSaved }: Props) {
                 ))}
               </ul>
 
+              {step.ddc && <MonitorControls codes={step.ddc} />}
+
               {step.question && step.options && (
                 <div className="question">
                   <h3>{t(step.question)}</h3>
@@ -214,7 +234,7 @@ export function Wizard({ prefs, onExit, onSaved }: Props) {
               <Check size={16} /> {t({ en: "Save results", tr: "Sonuçları kaydet" })}
             </button>
           ) : (
-            <button className="btn primary" disabled={!canContinue} onClick={() => setStepIndex(stepIndex + 1)}>
+            <button className="btn primary" disabled={!canContinue} onClick={next}>
               {stepIndex === 0 ? t({ en: "I'm ready", tr: "Hazırım" }) : t({ en: "Next", tr: "İleri" })} <ArrowRight size={16} />
             </button>
           )}

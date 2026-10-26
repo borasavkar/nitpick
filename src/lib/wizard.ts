@@ -1,5 +1,6 @@
 import type { L } from "../i18n";
 import type { Targets } from "./presets";
+import { VCP } from "./ddc";
 
 export type Tone = "good" | "warn" | "bad";
 
@@ -22,6 +23,8 @@ export interface WizardStep {
   instructions: (t: Targets) => L[];
   /** Which monitor menu settings this step is about. */
   controls?: L;
+  /** Monitor features the user can change from the panel over DDC/CI. */
+  ddc?: number[];
   question?: L;
   options?: WizardOption[];
   advise?: (answer: string, t: Targets) => Advice;
@@ -69,6 +72,7 @@ export const WIZARD_STEPS: WizardStep[] = [
     patternId: "dead-pixels",
     variant: 1,
     controls: { en: "Brightness / Backlight", tr: "Parlaklık (Brightness) / Arka ışık (Backlight)" },
+    ddc: [VCP.brightness],
     instructions: (t) => [
       {
         en: "Hold a sheet of white paper next to the screen, lit by your normal room light.",
@@ -118,6 +122,7 @@ export const WIZARD_STEPS: WizardStep[] = [
     id: "black",
     title: { en: "Black level", tr: "Siyah seviyesi" },
     patternId: "black-level",
+    ddc: [VCP.brightness, VCP.contrast],
     controls: {
       en: "Brightness, Black Level / Black Equalizer, RGB Range",
       tr: "Parlaklık, Siyah Seviyesi (Black Level / Black Equalizer), RGB Aralığı (RGB Range)",
@@ -184,6 +189,7 @@ export const WIZARD_STEPS: WizardStep[] = [
     title: { en: "White level", tr: "Beyaz seviyesi" },
     patternId: "white-level",
     controls: { en: "Contrast", tr: "Kontrast (Contrast)" },
+    ddc: [VCP.contrast],
     instructions: () => [
       {
         en: "Squares 235–254 are slightly darker than the white background.",
@@ -279,6 +285,7 @@ export const WIZARD_STEPS: WizardStep[] = [
     id: "gray",
     title: { en: "Color balance", tr: "Renk dengesi" },
     patternId: "grayscale",
+    ddc: [VCP.redGain, VCP.greenGain, VCP.blueGain],
     controls: {
       en: "Color Temperature, RGB Gain",
       tr: "Renk Sıcaklığı (Color Temperature), RGB Kazancı (RGB Gain)",

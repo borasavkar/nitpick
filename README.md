@@ -19,6 +19,7 @@ Most monitors ship with settings tuned to look flashy in a store: too bright, to
 
 ## Features
 
+- **Monitor control.** On monitors that support DDC/CI, change brightness, contrast and red/green/blue balance right from the app, with live sliders in each step and one-click undo. No need to dig through the monitor's buttons.
 - **Guided setup.** A short step-by-step wizard covering brightness, black level, white level, gamma, color balance, sharpness, smoothness and motion. Each step asks a simple question and tells you exactly which monitor setting to change.
 - **Targets for your use.** Choose what you use the screen for (general, photo, movies, gaming, office) and how your room is lit. NitPick picks sensible brightness, gamma and white point targets.
 - **11 test patterns.** Black level, white level, gamma (per channel), gray balance, gradients, sharpness, color bars, uniformity, dead pixels, motion clarity and text clarity.
@@ -31,8 +32,8 @@ Most monitors ship with settings tuned to look flashy in a store: too bright, to
 
 | Version | Planned |
 | --- | --- |
-| **0.1** | Test patterns, guided setup, use-case presets, web version |
-| 0.2 | Adjust supported monitors directly from the app over DDC/CI (brightness, contrast, RGB gain) |
+| 0.1 | Test patterns, guided setup, use-case presets, web version |
+| **0.2** | Adjust supported monitors directly from the app over DDC/CI (brightness, contrast, RGB gain) |
 | 0.3 | Quick profiles (Day / Movie / Night) from the system tray |
 | 1.0 | Multi-monitor workflow, more languages, shareable result cards |
 
@@ -45,6 +46,17 @@ Download the installer for your system from the [Releases](https://github.com/bo
 - **Linux:** `.AppImage`, `.deb` or `.rpm`
 
 Or use the [web version](https://borasavkar.github.io/nitpick/) with no install.
+
+## Monitor control (DDC/CI)
+
+Most external monitors let software change their settings over DDC/CI. If NitPick says your monitor doesn't respond:
+
+- Turn on **DDC/CI** in the monitor's on-screen menu (some monitors ship with it off).
+- Connect the monitor directly; some docks, adapters and KVM switches don't pass DDC/CI through.
+- Laptop built-in screens don't use DDC/CI; use your system's brightness keys.
+- **Linux:** load the `i2c-dev` module and give your user access, e.g. `sudo modprobe i2c-dev` and `sudo usermod -aG i2c $USER` (then log out and back in).
+
+Monitor control is tested on Windows. Reports from macOS and Linux users are very welcome.
 
 ## Build from source
 
