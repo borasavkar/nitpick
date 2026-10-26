@@ -21,8 +21,9 @@ jobs:
             args: --target x86_64-apple-darwin
           - platform: ubuntu-22.04
             args: ''
+          # WiX (.msi) fails on current Windows runners; the NSIS setup.exe works everywhere.
           - platform: windows-latest
-            args: ''
+            args: --bundles nsis
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v4
@@ -58,7 +59,7 @@ jobs:
             Find your monitor's best settings with guided test patterns. No calibration hardware needed. Available in English and Turkish.
 
             ## Download
-            - **Windows:** `NitPick_x.y.z_x64-setup.exe` (or the `.msi`)
+            - **Windows:** `NitPick_x.y.z_x64-setup.exe`
             - **macOS:** `NitPick_x.y.z_aarch64.dmg` for Apple Silicon, `NitPick_x.y.z_x64.dmg` for Intel
             - **Linux:** `.AppImage`, `.deb` or `.rpm`
 

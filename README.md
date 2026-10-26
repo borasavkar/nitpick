@@ -40,7 +40,7 @@ Most monitors ship with settings tuned to look flashy in a store: too bright, to
 
 Download the installer for your system from the [Releases](https://github.com/borasavkar/nitpick/releases) page:
 
-- **Windows:** `.msi` or `.exe` setup
+- **Windows:** `setup.exe` installer
 - **macOS:** `.dmg` (Apple Silicon and Intel)
 - **Linux:** `.AppImage`, `.deb` or `.rpm`
 
