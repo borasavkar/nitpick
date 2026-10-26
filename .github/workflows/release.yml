@@ -54,7 +54,21 @@ jobs:
         with:
           tagName: ${{ github.ref_name }}
           releaseName: NitPick ${{ github.ref_name }}
-          releaseBody: See the assets below to download NitPick for your system.
+          releaseBody: |
+            Find your monitor's best settings with guided test patterns. No calibration hardware needed. Available in English and Turkish.
+
+            ## Download
+            - **Windows:** `NitPick_x.y.z_x64-setup.exe` (or the `.msi`)
+            - **macOS:** `NitPick_x.y.z_aarch64.dmg` for Apple Silicon, `NitPick_x.y.z_x64.dmg` for Intel
+            - **Linux:** `.AppImage`, `.deb` or `.rpm`
+
+            Prefer not to install anything? Use the [web version](https://borasavkar.github.io/nitpick/).
+
+            ## First launch
+            These builds are not code-signed yet, so your system may warn you the first time:
+            - **Windows:** if SmartScreen says "Windows protected your PC", click **More info → Run anyway**.
+            - **macOS:** if the app is blocked, open **System Settings → Privacy & Security** and click **Open Anyway**. If macOS says the app "is damaged", run `xattr -cr /Applications/NitPick.app` in Terminal and open it again.
+            - **Linux (AppImage):** make the file executable (`chmod +x NitPick_*.AppImage`) and run it.
           releaseDraft: true
           prerelease: false
           args: ${{ matrix.args }}
