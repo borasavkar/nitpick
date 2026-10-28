@@ -260,3 +260,8 @@ kbd {
 .mc-foot .link-btn { margin-top: 0; }
 .mc-note { color: var(--dim); font-size: 0.82rem; }
 .mc-note.warn { color: var(--warn); }
+.mc-which { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.mc-mode { font-size: 0.74rem; font-weight: 600; padding: 3px 9px; border-radius: 999px; }
+.mc-mode.hw { color: var(--good); background: rgba(61, 220, 132, 0.1); }
+.mc-mode.sw { color: var(--warn); background: rgba(255, 181, 71, 0.1); }
+.mc-slider { grid-template-columns: 82px 1fr 42px; }

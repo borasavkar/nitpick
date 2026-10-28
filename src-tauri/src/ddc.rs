@@ -31,6 +31,22 @@ pub struct DdcDisplay {
     /// False when the monitor doesn't answer DDC/CI (unsupported, or turned off in its menu).
     supported: bool,
     features: Vec<Feature>,
+    /// OS device name used for software adjustment; `None` where that isn't available.
+    gdi_name: Option<String>,
+}
+
+/// OS-level identity of each display, in DDC enumeration order: (device name, friendly name).
+#[cfg(windows)]
+fn os_identities() -> Vec<(Option<String>, Option<String>)> {
+    crate::win_display::monitors()
+        .into_iter()
+        .flat_map(|m| std::iter::repeat_n((Some(m.gdi_name), m.friendly_name), m.physical_count))
+        .collect()
+}
+
+#[cfg(not(windows))]
+fn os_identities() -> Vec<(Option<String>, Option<String>)> {
+    Vec::new()
 }
 
 fn display_key(index: usize, d: &Display) -> String {
@@ -71,10 +87,12 @@ pub async fn ddc_list() -> Result<Vec<DdcDisplay>, String> {
     blocking(|| {
         let _guard = DDC_LOCK.lock().unwrap_or_else(|e| e.into_inner());
         let mut displays = Display::enumerate();
+        let identities = os_identities();
         Ok(displays
             .iter_mut()
             .enumerate()
             .map(|(i, d)| {
+                let (gdi_name, friendly) = identities.get(i).cloned().unwrap_or((None, None));
                 let features: Vec<Feature> = FEATURES
                     .iter()
                     .filter_map(|&code| {
@@ -84,9 +102,14 @@ pub async fn ddc_list() -> Result<Vec<DdcDisplay>, String> {
                     .collect();
                 DdcDisplay {
                     key: display_key(i, d),
-                    name: display_name(d),
+                    // Prefer the longer DDC name when it already contains the EDID name ("AOC CU34G2XP").
+                    name: match friendly {
+                        Some(f) if !display_name(d).contains(&f) => f,
+                        _ => display_name(d),
+                    },
                     supported: !features.is_empty(),
                     features,
+                    gdi_name,
                 }
             })
             .collect())
@@ -109,4 +132,20 @@ pub async fn ddc_set(key: String, code: u8, value: u16) -> Result<(), String> {
         })
     })
     .await
+}
+
+/// Software adjustment through the graphics card's output curve, for monitors without DDC/CI.
+/// Values are percentages (100 = unchanged). It changes the picture, not the backlight.
+#[tauri::command]
+pub async fn sw_set(gdi_name: String, brightness: f64, red: f64, green: f64, blue: f64) -> Result<(), String> {
+    #[cfg(windows)]
+    {
+        let f = |v: f64| (v / 100.0).clamp(0.0, 1.0);
+        blocking(move || crate::win_display::set_gamma(&gdi_name, f(brightness), [f(red), f(green), f(blue)])).await
+    }
+    #[cfg(not(windows))]
+    {
+        let _ = (gdi_name, brightness, red, green, blue);
+        Err("Software adjustment is only available on Windows".into())
+    }
 }
