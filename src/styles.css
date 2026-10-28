@@ -265,3 +265,25 @@ kbd {
 .mc-mode.hw { color: var(--good); background: rgba(61, 220, 132, 0.1); }
 .mc-mode.sw { color: var(--warn); background: rgba(255, 181, 71, 0.1); }
 .mc-slider { grid-template-columns: 82px 1fr 42px; }
+
+/* ---------- Profiles ---------- */
+.profile-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; }
+.profile-card {
+  display: flex; flex-direction: column; gap: 6px; padding: 16px 18px; border-radius: var(--radius);
+  border: 1px solid var(--border); background: var(--surface);
+}
+.profile-card.active { border-color: rgba(139, 124, 255, 0.55); background: linear-gradient(160deg, rgba(139, 124, 255, 0.1), var(--surface) 60%); }
+.pf-head { display: flex; align-items: center; gap: 8px; }
+.pf-head svg { color: var(--accent-2); }
+.pf-badge { margin-left: auto; font-size: 0.72rem; font-weight: 600; color: var(--accent-2); background: rgba(139, 124, 255, 0.14); padding: 2px 8px; border-radius: 999px; }
+.pf-hint { color: var(--muted); font-size: 0.86rem; }
+.pf-status { color: var(--dim); font-size: 0.8rem; }
+.pf-actions { display: flex; align-items: center; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+.startup { margin-top: 16px; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; }
+.toggle {
+  display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border-radius: var(--radius);
+  border: 1px solid var(--border); background: var(--surface); cursor: pointer;
+}
+.toggle input { margin-top: 3px; width: 17px; height: 17px; accent-color: var(--accent); flex: none; }
+.toggle span { display: flex; flex-direction: column; gap: 2px; }
+.toggle small { color: var(--muted); font-size: 0.82rem; }

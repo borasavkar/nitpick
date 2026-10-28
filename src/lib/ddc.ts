@@ -74,6 +74,10 @@ function subscribe(listener: () => void) {
   return () => listeners.delete(listener);
 }
 
+export function getDdcState(): State {
+  return state;
+}
+
 export function useDdc(): State {
   return useSyncExternalStore(subscribe, () => state);
 }
@@ -84,7 +88,9 @@ export const isAdjustable = (d: DdcDisplay) => d.supported || d.gdiName != null;
 // Software values are saved per monitor (by name and port) and re-applied when the app opens,
 // because Windows resets the graphics card's curve after a restart.
 const SOFT_KEY = "nitpick.soft.v1";
-const softId = (d: DdcDisplay) => `${d.name}|${d.gdiName}`;
+/** Identifies a monitor across app restarts (the DDC key includes a session index). */
+export const displayId = (d: DdcDisplay) => `${d.name}|${d.gdiName}`;
+const softId = displayId;
 
 function loadSoft(): Record<string, SoftValues> {
   try {

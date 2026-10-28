@@ -20,6 +20,8 @@ Most monitors ship with settings tuned to look flashy in a store: too bright, to
 ## Features
 
 - **Monitor control.** On monitors that support DDC/CI, change brightness, contrast and red/green/blue balance right from the app, with live sliders in each step and one-click undo. No need to dig through the monitor's buttons. Monitors are shown by their real model names, and on Windows, monitors without DDC/CI get a software adjustment instead.
+- **Profiles in the taskbar.** Save your monitor settings as Day, Movie and Night profiles and switch between them from the NitPick icon in the system tray. A profile covers all your monitors at once.
+- **Starts with your computer (optional).** NitPick can start quietly in the tray when you sign in, which also re-applies software adjustments.
 - **Guided setup.** A short step-by-step wizard covering brightness, black level, white level, gamma, color balance, sharpness, smoothness and motion. Each step asks a simple question and tells you exactly which monitor setting to change.
 - **Targets for your use.** Choose what you use the screen for (general, photo, movies, gaming, office) and how your room is lit. NitPick picks sensible brightness, gamma and white point targets.
 - **11 test patterns.** Black level, white level, gamma (per channel), gray balance, gradients, sharpness, color bars, uniformity, dead pixels, motion clarity and text clarity.
@@ -33,8 +35,8 @@ Most monitors ship with settings tuned to look flashy in a store: too bright, to
 | Version | Planned |
 | --- | --- |
 | 0.1 | Test patterns, guided setup, use-case presets, web version |
-| **0.2** | Adjust supported monitors directly from the app over DDC/CI (brightness, contrast, RGB gain) |
-| 0.3 | Quick profiles (Day / Movie / Night) from the system tray |
+| 0.2 | Adjust supported monitors directly from the app over DDC/CI (brightness, contrast, RGB gain) |
+| **0.3** | Day / Movie / Night profiles from the system tray, start with the computer |
 | 1.0 | Multi-monitor workflow, more languages, shareable result cards |
 
 ## Install
@@ -56,7 +58,7 @@ Most external monitors let software change their settings over DDC/CI. If NitPic
 - Laptop built-in screens don't use DDC/CI; use your system's brightness keys.
 - **Linux:** load the `i2c-dev` module and give your user access, e.g. `sudo modprobe i2c-dev` and `sudo usermod -aG i2c $USER` (then log out and back in).
 
-**Monitors without DDC/CI (Windows):** NitPick offers a *software adjustment* instead. It changes the graphics card's output curve to darken the picture (down to 50%) or shift its color balance. It can't change the backlight or add contrast, but it's handy for matching a second monitor to your main one. The setting is saved and re-applied when NitPick opens, since Windows resets it after a restart; Windows Night light and HDR can override it.
+**Monitors without DDC/CI (Windows):** NitPick offers a *software adjustment* instead. It changes the graphics card's output curve to darken the picture (down to 50%) or shift its color balance. It can't change the backlight or add contrast, but it's handy for matching a second monitor to your main one. The setting is saved and re-applied when NitPick opens, since Windows resets it after a restart (turn on *Start when I sign in* to do this automatically); Windows Night light and HDR can override it.
 
 Monitor control is tested on Windows. Reports from macOS and Linux users are very welcome.
 

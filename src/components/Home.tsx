@@ -3,6 +3,7 @@ import { ChevronRight, Monitor, Play, Trash2 } from "lucide-react";
 import type { Prefs, View } from "../App";
 import { Logo } from "./Logo";
 import { MonitorControls } from "./MonitorControls";
+import { ProfilesPanel } from "./ProfilesPanel";
 import { PATTERNS } from "../patterns";
 import { AMBIENTS, USE_CASES, getTargets } from "../lib/presets";
 import { deleteResult, loadResults, resultTitle, type SavedResult } from "../lib/storage";
@@ -139,6 +140,12 @@ export function Home({ prefs, onPrefs, onNavigate }: Props) {
         {isTauri() && (
           <section>
             <MonitorControls standalone />
+          </section>
+        )}
+
+        {isTauri() && (
+          <section>
+            <ProfilesPanel />
           </section>
         )}
 

@@ -1,6 +1,6 @@
 [package]
 name = "nitpick"
-version = "0.2.1"
+version = "0.3.0"
 description = "Find your monitor's best settings with guided test patterns"
 authors = ["Bora Şavkar"]
 license = "MIT"
@@ -20,7 +20,7 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 tauri-build = { version = "2", features = [] }
 
 [dependencies]
-tauri = { version = "2", features = [] }
+tauri = { version = "2", features = ["tray-icon"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 ddc-hi = { version = "0.4.1", default-features = false, features = ["ddc-i2c", "ddc-winapi", "ddc-macos"] }
@@ -36,3 +36,7 @@ strip = true
 
 [target."cfg(windows)".dependencies]
 windows-sys = { version = "0.61.2", features = ["Win32_Foundation", "Win32_Graphics_Gdi", "Win32_Devices_Display", "Win32_UI_ColorSystem"] }
+
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+tauri-plugin-autostart = "2.7.0"
+tauri-plugin-single-instance = "2.5.5"

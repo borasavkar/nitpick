@@ -1,7 +1,7 @@
 {
   "name": "nitpick",
   "private": true,
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Find your monitor's best settings with guided test patterns",
   "license": "MIT",
   "type": "module",
@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@tauri-apps/api": "^2",
+    "@tauri-apps/plugin-autostart": "^2.7.0",
     "lucide-react": "^1.55.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"

@@ -4,6 +4,7 @@ import { PatternViewer } from "./components/PatternViewer";
 import { Wizard } from "./components/Wizard";
 import { ResultView } from "./components/ResultView";
 import { I18nProvider } from "./i18n";
+import { TrayBridge } from "./components/TrayBridge";
 import type { Ambient, UseCase } from "./lib/presets";
 import "./styles.css";
 
@@ -62,6 +63,7 @@ function Screens() {
 export default function App() {
   return (
     <I18nProvider>
+      <TrayBridge />
       <Screens />
     </I18nProvider>
   );
