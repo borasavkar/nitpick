@@ -1,7 +1,7 @@
 {
   "name": "nitpick",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Find your monitor's best settings with guided test patterns",
   "license": "MIT",
   "type": "module",
