@@ -91,16 +91,32 @@ export function getTargets(useCase: UseCase, ambient: Ambient): Targets {
       break;
     case "gaming":
       tips.push({
-        en: "Set Overdrive / Response Time to a medium level; the highest level often causes bright trails.",
-        tr: "Overdrive / Tepki Süresi ayarını orta seviyeye getirin; en yüksek seviye çoğu zaman parlak izlere yol açar.",
+        en: "Set Overdrive / Response Time to a medium level. Too low leaves dark trails behind moving objects (common on VA panels); the highest level adds bright halos. Check it with the Motion Clarity pattern.",
+        tr: "Overdrive / Tepki Süresi ayarını orta seviyeye getirin. Düşük seviye, hareket eden nesnelerin arkasında koyu izler bırakır (VA panellerde sık görülür); en yüksek seviye ise parlak haleler ekler. Hareket Netliği deseniyle kontrol edin.",
       });
       tips.push({
-        en: "Enable the monitor's low input lag or game mode if available.",
-        tr: "Varsa monitörün düşük gecikme (low input lag) veya oyun modunu açın.",
+        en: "Turn on FreeSync / G-Sync (adaptive sync) in both the monitor menu and your graphics driver, and connect over DisplayPort to get the highest refresh rate.",
+        tr: "FreeSync / G-Sync'i (uyarlanabilir senkronizasyon) hem monitör menüsünde hem ekran kartı ayarlarında açın. En yüksek yenileme hızı için monitörü DisplayPort ile bağlayın.",
       });
       tips.push({
-        en: "Avoid 'Black Equalizer' / shadow boost for accurate images; use it only for competitive play.",
-        tr: "Doğru bir görüntü için 'Black Equalizer' / gölge güçlendirme özelliğini kullanmayın; yalnızca rekabetçi oyunlarda açın.",
+        en: "Keep motion blur reduction (MBR, ELMB, strobing) off unless you need it: it dims the screen noticeably and usually can't run together with FreeSync / G-Sync.",
+        tr: "Hareket bulanıklığı azaltma özelliğini (MBR, ELMB, strobing) gerekmedikçe kapalı tutun: ekranı belirgin şekilde karartır ve çoğu monitörde FreeSync / G-Sync ile birlikte çalışmaz.",
+      });
+      tips.push({
+        en: "Turn off dynamic contrast (DCR) and color boosters (DCB, Picture Boost, Vivid): they make brightness jump between scenes and push colors away from accurate.",
+        tr: "Dinamik kontrastı (DCR) ve renk güçlendiricileri (DCB, Picture Boost, Canlı mod) kapatın: sahneden sahneye parlaklık sıçramalarına yol açar ve renkleri doğruluktan uzaklaştırır.",
+      });
+      tips.push({
+        en: "Enable the monitor's low input lag setting if it has one.",
+        tr: "Monitörünüzde düşük gecikme (low input lag) ayarı varsa açın.",
+      });
+      tips.push({
+        en: "Avoid 'Black Equalizer' / 'Shadow Control' boosts for accurate images; they turn blacks gray. Use them only for competitive play.",
+        tr: "Doğru bir görüntü için 'Black Equalizer' / 'Shadow Control' gibi gölge güçlendirmeleri kullanmayın; siyahları griye çevirir. Yalnızca rekabetçi oyunlarda açın.",
+      });
+      tips.push({
+        en: "On monitors with entry-level HDR (such as DisplayHDR 400), keep Windows HDR off on the desktop and turn it on only for games that handle HDR well (Win + Alt + B toggles it on Windows 11).",
+        tr: "Giriş seviyesi HDR'ye sahip monitörlerde (ör. DisplayHDR 400) masaüstünde Windows HDR'yi kapalı tutun; yalnızca HDR'yi iyi destekleyen oyunlarda açın (Windows 11'de Win + Alt + B ile açılıp kapanır).",
       });
       break;
     case "office":

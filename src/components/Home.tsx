@@ -135,6 +135,19 @@ export function Home({ prefs, onPrefs, onNavigate }: Props) {
               <Play size={18} /> {t({ en: "Start guided setup", tr: "Rehberli ayara başla" })}
             </button>
           </div>
+
+          {targets.tips.length > 0 && (
+            <details className="use-tips">
+              <summary>
+                {t({ en: `Tips for this use (${targets.tips.length})`, tr: `Bu kullanım için öneriler (${targets.tips.length})` })}
+              </summary>
+              <ul>
+                {targets.tips.map((tip) => (
+                  <li key={tip.en}>{t(tip)}</li>
+                ))}
+              </ul>
+            </details>
+          )}
         </section>
 
         {isTauri() && (
