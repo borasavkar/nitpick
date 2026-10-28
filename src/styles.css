@@ -123,13 +123,15 @@ legend { font-size: 0.82rem; font-weight: 600; color: var(--muted); margin-botto
 .text-colors { display: flex; gap: 24px; font-size: 15px; margin-top: 10px; }
 
 /* ---------- Viewer ---------- */
-.viewer { position: fixed; inset: 0; background: #000; }
+.viewer { position: fixed; inset: 0; background: #000; contain: strict; }
 .viewer.hide-cursor { cursor: none; }
 .viewer-pattern { position: absolute; inset: 0; }
 .hud {
   position: absolute; top: 20px; left: 20px; width: min(440px, calc(100% - 40px));
-  padding: 16px 18px; border-radius: 14px; background: rgba(18, 18, 22, 0.92); border: 1px solid var(--border);
-  backdrop-filter: blur(8px); box-shadow: 0 16px 50px rgba(0, 0, 0, 0.5);
+  padding: 16px 18px; border-radius: 14px; background: rgb(18, 18, 22); border: 1px solid var(--border);
+  /* No backdrop blur or large shadow: over a full-screen pattern they cost a lot of GPU time
+     and made the mouse stutter on wide high-refresh monitors. */
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
   opacity: 0; transform: translateY(-6px); pointer-events: none; transition: opacity 0.25s, transform 0.25s;
   cursor: default;
 }

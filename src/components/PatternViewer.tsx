@@ -33,16 +33,33 @@ export function PatternViewer({ initialId, onClose }: { initialId: string; onClo
     [variants.length, goPattern],
   );
 
+  // Mouse moves arrive hundreds of times a second; only touch React state when the HUD
+  // actually changes, and restart the hide timer at most every 200 ms.
+  const lastPoke = useRef(0);
+  const hudShown = useRef(true);
   const poke = useCallback(() => {
-    setHudVisible(true);
+    const now = performance.now();
+    if (hudShown.current && hideTimer.current && now - lastPoke.current < 200) return;
+    lastPoke.current = now;
+    if (!hudShown.current) {
+      hudShown.current = true;
+      setHudVisible(true);
+    }
     window.clearTimeout(hideTimer.current);
-    hideTimer.current = window.setTimeout(() => setHudVisible(false), 2800);
+    hideTimer.current = window.setTimeout(() => {
+      hideTimer.current = 0;
+      hudShown.current = false;
+      setHudVisible(false);
+    }, 2800);
   }, []);
 
   useEffect(() => {
     setFullscreen(true);
     poke();
-    return () => window.clearTimeout(hideTimer.current);
+    return () => {
+      window.clearTimeout(hideTimer.current);
+      hideTimer.current = 0;
+    };
   }, [poke]);
 
   useEffect(() => {
